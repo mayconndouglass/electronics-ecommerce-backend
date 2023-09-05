@@ -8,11 +8,11 @@ export class RegisterCategoryUseCase {
   async execute(data: RegisterCategoryDTO) {
     const categoryWithSameName = await this.categoryRepository.findByName(data.name)
 
-    if (!categoryWithSameName) {
+    if (categoryWithSameName) {
       throw new CategoryAlreadyExistsError()
     }
 
-    const category = this.categoryRepository.create({ ...data })
+    const category = await this.categoryRepository.create({ ...data })
 
     return {
       category

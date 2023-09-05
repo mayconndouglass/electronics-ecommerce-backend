@@ -1,5 +1,7 @@
-import { Category, Prisma } from "@prisma/client"
+import { RegisterCategoryDTO } from "@/dtos/RegisterCategoryDTO"
+import { Category } from "@prisma/client"
 
 export interface CategoryRepository {
-  create(data: Prisma.CategoryUncheckedCreateInput): Promise<Category>
+  create(data: RegisterCategoryDTO): Promise<Category>
+  findByName(name: string): Promise<Category | null>
 }

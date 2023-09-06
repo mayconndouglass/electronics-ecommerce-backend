@@ -1,11 +1,22 @@
 import fastify from "fastify"
+import fastifyStatic from "@fastify/static"
+import multer from "fastify-multer"
+
 import { ZodError } from "zod"
 import { env } from "./env"
 import { categoriesRoutes } from "./controllers/Categories/routes"
+import path from "path"
 
 export const app = fastify()
 
 app.register(categoriesRoutes)
+
+app.register(multer.contentParser)
+
+app.register(fastifyStatic, {
+  root: path.join(__dirname, "..", "uploads"),
+  prefix: "/images",
+})
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {

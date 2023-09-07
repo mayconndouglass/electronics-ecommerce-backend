@@ -1,6 +1,5 @@
 import fastify from "fastify"
 import fastifyStatic from "@fastify/static"
-import multer from "fastify-multer"
 
 import { ZodError } from "zod"
 import { env } from "./env"
@@ -10,8 +9,6 @@ import path from "path"
 export const app = fastify()
 
 app.register(categoriesRoutes)
-
-app.register(multer.contentParser)
 
 app.register(fastifyStatic, {
   root: path.join(__dirname, "..", "uploads"),

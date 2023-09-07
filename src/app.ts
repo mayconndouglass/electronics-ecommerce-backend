@@ -1,18 +1,17 @@
 import fastify from "fastify"
-import fastifyStatic from "@fastify/static"
+import cors from "@fastify/cors"
 
 import { ZodError } from "zod"
 import { env } from "./env"
 import { categoriesRoutes } from "./controllers/Categories/routes"
-import path from "path"
 
 export const app = fastify()
 
 app.register(categoriesRoutes)
 
-app.register(fastifyStatic, {
-  root: path.join(__dirname, "..", "uploads"),
-  prefix: "/images",
+app.register(cors, {
+  origin: ["http://localhost:5173"],
+  methods: ["GET", "POST"],
 })
 
 app.setErrorHandler((error, _, reply) => {

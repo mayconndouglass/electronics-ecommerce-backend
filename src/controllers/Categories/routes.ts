@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
-import { registerCategory } from "./register.category"
+import { registerCategory } from "./register-category-controller"
 
 import { storage } from "../../middlewares/multer"
 import multer from "fastify-multer"
-import { fetchAllCategories } from "./fetch-all.category"
+import { fetchAllCategories } from "./fetch-all-category-controller"
 
 export const categoriesRoutes = async (app: FastifyInstance) => {
   app.register(multer.contentParser)

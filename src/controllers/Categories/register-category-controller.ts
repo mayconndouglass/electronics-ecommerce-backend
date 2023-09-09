@@ -6,9 +6,6 @@ import { RegisterCategoryUseCase } from "@/use-cases/Categories/register-categor
 import { CategoryAlreadyExistsError } from "@/use-cases/errors/category-already-exist-error"
 import { MulterRequest, useImageUpload } from "@/hooks/use-image-upload"
 
-/* import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { getstorage } from "@/config/firebase-config" */
-
 export const registerCategory = async (request: FastifyRequest, reply: FastifyReply) => {
   const registerCategoryBodySchema = z.object({
     name: z.string(),
@@ -17,11 +14,6 @@ export const registerCategory = async (request: FastifyRequest, reply: FastifyRe
 
   const data = registerCategoryBodySchema.parse(request.body)
   const [url] = await useImageUpload(request as MulterRequest)
-
-  /* const reqFile = (request as MulterRequest).file
-  const storageRef = ref(getstorage, reqFile.originalname)
-  uploadBytes(storageRef, reqFile.buffer)
-  const url = await getDownloadURL(storageRef) */
 
   try {
     const categoryRepository = new PrismaCategoryRepository()

@@ -8,10 +8,60 @@ datasource db {
 }
 
 model Category {
-  id          String  @id @default(uuid())
-  name        String  @unique
+  id          String    @id @default(uuid())
+  name        String    @unique
   description String?
   image       String
+  Product     Product[]
 
   @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  image       String
+  created_at  DateTime @default(now())
+  price       String
+  promotion   String?
+
+  category     Category       @relation(fields: [category_id], references: [id])
+  Review       Review[]
+  ProductColor ProductColor[]
+  category_id  String
+
+  @@map("products")
+}
+
+// Falta criar a tablea usuario para relacionar a essa tabela Review
+model Review {
+  id     String @id @default(uuid())
+  stars  Int
+  coment String
+
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id String
+
+  @@map("reviews")
+}
+
+model Color {
+  id          String  @id @default(uuid())
+  name        String?
+  hexadecimal String  @unique
+
+  ProductColor ProductColor[]
+
+  @@map("colors")
+}
+
+model ProductColor {
+  color      Color   @relation(fields: [color_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
+  color_id   String
+  product_id String
+
+  @@id([color_id, product_id])
+  @@map("product_color")
 }

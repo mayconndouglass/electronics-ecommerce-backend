@@ -48,9 +48,8 @@ model Review {
 }
 
 model Color {
-  id          String  @id @default(uuid())
-  name        String?
-  hexadecimal String  @unique
+  id          String @id @default(uuid())
+  hexadecimal String @unique
 
   ProductColor ProductColor[]
 

@@ -1,4 +1,4 @@
-import { PrismaCategoryRepository } from "@/repositories/interfaces/prisma-category-repository"
+import { PrismaCategoryRepository } from "@/repositories/prisma-category-repository"
 import { FetchAllCategories } from "@/use-cases/Categories/fetch-all-categories"
 import { FastifyReply, FastifyRequest } from "fastify"
 

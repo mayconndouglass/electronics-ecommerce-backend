@@ -1,5 +1,5 @@
 import { RegisterCategoryDTO } from "@/dtos/RegisterCategoryDTO"
-import { CategoryRepository } from "./category-repository"
+import { CategoryRepository } from "./interfaces/category-repository"
 import { prisma } from "@/lib/prisma"
 
 export class PrismaCategoryRepository implements CategoryRepository {

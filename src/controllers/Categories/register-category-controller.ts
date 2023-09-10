@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify"
 import { z } from "zod"
 
-import { PrismaCategoryRepository } from "@/repositories/interfaces/prisma-category-repository"
+import { PrismaCategoryRepository } from "@/repositories/prisma-category-repository"
 import { RegisterCategoryUseCase } from "@/use-cases/Categories/register-category"
 import { CategoryAlreadyExistsError } from "@/use-cases/errors/category-already-exist-error"
 import { MulterRequest, useImageUpload } from "@/hooks/use-image-upload"

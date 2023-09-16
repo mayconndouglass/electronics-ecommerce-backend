@@ -12,13 +12,7 @@ export class RegisterProductUseCase {
   ) { }
 
   async execute(productData: RegisterProductDTO & { colors?: string[] }) {
-    const {
-      discount,
-      price,
-      colors,
-      categoryId,
-      ...restData
-    } = productData
+    const { discount, price } = productData
 
     if (discount) {
       const priceValue = Number(price.trim().replace("R$", ""))
@@ -28,12 +22,13 @@ export class RegisterProductUseCase {
       productData.promotionalPrice = "R$" + calculatedPromotionalPrice
     }
 
+    const { promotionalPrice, categoryId, colors, ...restData } = productData
     const product = await this.productRepository.create({
       ...restData,
       discount,
       price,
       category_id: categoryId,
-      promotional_price: productData.promotionalPrice
+      promotional_price: promotionalPrice
     })
 
     if (colors) {

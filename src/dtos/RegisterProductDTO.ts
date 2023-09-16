@@ -1,13 +1,9 @@
-import { Prisma } from "@prisma/client"
-
-export class RegisterProductDTO implements Prisma.ProductUncheckedCreateInput {
-  id?: string | undefined
+export class RegisterProductDTO {
   name: string
   description: string
   image: string
-  created_at?: string | Date | undefined
   price: string
-  promotional_price?: string | null | undefined
-  discount?: string | null | undefined
-  category_id: string
+  promotionalPrice?: string | null | undefined
+  discount?: number | null | undefined
+  categoryId: string
 }

@@ -25,7 +25,7 @@ model Product {
   created_at        DateTime @default(now())
   price             String
   promotional_price String?
-  discount          String?
+  discount          Int?
 
   category     Category       @relation(fields: [category_id], references: [id])
   Review       Review[]

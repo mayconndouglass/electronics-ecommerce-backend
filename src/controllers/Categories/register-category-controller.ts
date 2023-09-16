@@ -13,7 +13,8 @@ export const registerCategory = async (request: FastifyRequest, reply: FastifyRe
   })
 
   const data = registerCategoryBodySchema.parse(request.body)
-  const [url] = await useImageUpload(request as MulterRequest)
+  //TODO: As primeiras categorias foram passadas apenas para a pasta images, alterar isso
+  const [url] = await useImageUpload(request as MulterRequest, "categories")
 
   try {
     const categoryRepository = new PrismaCategoryRepository()

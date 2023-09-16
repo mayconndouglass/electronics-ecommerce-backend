@@ -1,4 +1,3 @@
-import { RegisterColorDTO } from "@/dtos/RegisterColorDTO"
 import { RegisterProductDTO } from "@/dtos/RegisterProductDTO"
 
 import { ColorRepository } from "@/repositories/interfaces/color-repository"
@@ -12,41 +11,57 @@ export class RegisterProductUseCase {
     private productColorRepository: ProductColorRepository
   ) { }
 
-  async execute(data: RegisterProductDTO & { colors: RegisterColorDTO[] }) {
+  async execute(productData: RegisterProductDTO & { colors?: string[] }) {
     const {
-      name, description, image, price, promotional_price, discount, category_id, colors
-    } = data
+      discount,
+      price,
+      colors,
+      categoryId,
+      promotionalPrice,
+      ...restData
+    } = productData
+
+    if (discount) {
+      const priceWithoutPercent = price.replace("%", "")
+      const calculatedPromotionalPrice = (Number(priceWithoutPercent) * discount) / 100
+
+      productData.promotionalPrice = "$" + calculatedPromotionalPrice
+    }
 
     const product = await this.productRepository.create({
-      name,
-      description,
-      image,
-      price,
-      promotional_price,
+      ...restData,
       discount,
-      category_id
+      price,
+      category_id: categoryId,
+      promotional_price: promotionalPrice
     })
 
-    const colorsAdded = await Promise.all(colors.map(async ({ hexadecimal }) => {
-      let color = await this.colorRepository.findByHexadecimal(hexadecimal)
+    if (colors) {
+      const colorsAdded = await Promise.all(colors.map(async (hexadecimal) => {
+        let color = await this.colorRepository.findByHexadecimal(hexadecimal)
 
-      if (!color) {
-        color = await this.colorRepository.create(hexadecimal)
+        if (!color) {
+          color = await this.colorRepository.create(hexadecimal)
+        }
+
+        await this.productColorRepository.create({
+          color_id: color.id,
+          product_id: product.id
+        })
+
+        return color
+      }))
+
+      return {
+        ...product,
+        colors: {
+          ...colorsAdded
+        }
       }
-
-      await this.productColorRepository.create({
-        color_id: color.id,
-        product_id: product.id
-      })
-
-      return color
-    }))
+    }
 
     return {
       ...product,
-      colors: {
-        ...colorsAdded
-      }
     }
   }
 }

@@ -9,10 +9,10 @@ export interface MulterRequest extends FastifyRequest {
   }
 }
 
-export const useImageUpload = async (req: MulterRequest) => {
+export const useImageUpload = async (req: MulterRequest, folder: string) => {
   const reqFile = req.file
   const newFileName = `${Date.now()}-${reqFile.originalname}`
-  const storageRef = ref(getstorage, `images/${newFileName}`)
+  const storageRef = ref(getstorage, `images/${folder}/${newFileName}`)
 
   await uploadBytes(storageRef, reqFile.buffer)
   const url: string = await getDownloadURL(storageRef)

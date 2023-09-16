@@ -17,15 +17,15 @@ export class RegisterProductUseCase {
       price,
       colors,
       categoryId,
-      promotionalPrice,
       ...restData
     } = productData
 
     if (discount) {
-      const priceWithoutPercent = price.replace("%", "")
-      const calculatedPromotionalPrice = (Number(priceWithoutPercent) * discount) / 100
+      const priceValue = Number(price.trim().replace("R$", ""))
+      const calculatedPromotionalPrice =
+        (priceValue - (priceValue * discount) / 100).toFixed(2)
 
-      productData.promotionalPrice = "$" + calculatedPromotionalPrice
+      productData.promotionalPrice = "R$" + calculatedPromotionalPrice
     }
 
     const product = await this.productRepository.create({
@@ -33,7 +33,7 @@ export class RegisterProductUseCase {
       discount,
       price,
       category_id: categoryId,
-      promotional_price: promotionalPrice
+      promotional_price: productData.promotionalPrice
     })
 
     if (colors) {

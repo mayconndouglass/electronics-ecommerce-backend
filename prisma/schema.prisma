@@ -21,7 +21,6 @@ model Product {
   id                String   @id @default(uuid())
   name              String
   description       String
-  image             String
   created_at        DateTime @default(now())
   price             String
   promotional_price String?
@@ -31,6 +30,7 @@ model Product {
   Review       Review[]
   ProductColor ProductColor[]
   category_id  String
+  ProducImage  ProducImage[]
 
   @@map("products")
 }
@@ -64,4 +64,20 @@ model ProductColor {
 
   @@id([color_id, product_id])
   @@map("product_color")
+}
+
+model Image {
+  id          String        @id @default(uuid())
+  url         String        @unique
+  ProducImage ProducImage[]
+}
+
+model ProducImage {
+  image      Image   @relation(fields: [image_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
+  image_id   String
+  product_id String
+
+  @@id([image_id, product_id])
+  @@map("product_image")
 }

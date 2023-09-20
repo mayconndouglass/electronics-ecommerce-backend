@@ -13,7 +13,6 @@ export const registerCategory = async (request: FastifyRequest, reply: FastifyRe
   })
 
   const data = registerCategoryBodySchema.parse(request.body)
-  //TODO: As primeiras categorias foram passadas apenas para a pasta images, alterar isso
   const [url] = await useImageUpload(request as MulterRequest, "categories")
 
   try {

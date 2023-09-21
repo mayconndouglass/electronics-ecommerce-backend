@@ -11,7 +11,7 @@ export const registerProduct = async (request: FastifyRequest, reply: FastifyRep
     const data = registerProductSchema.parse(request.body)
     const urls = await handleImageUpload.
       uploadMultipleImages(request as MulterRequest, "products")
-    console.log("URLUSECASE", urls)
+
     const registerProductUseCase = MakeRegisterProduct()
 
     const product = await registerProductUseCase.execute({

@@ -1,17 +1,22 @@
 import { RegisterProductDTO } from "@/dtos/RegisterProductDTO"
 
 import { ColorRepository } from "@/repositories/interfaces/color-repository"
+import { ImageRepository } from "@/repositories/interfaces/image-repository"
 import { ProductColorRepository } from "@/repositories/interfaces/product-color-repository"
+import { ProductImageRepository } from "@/repositories/interfaces/product-image-repository"
 import { ProductRepository } from "@/repositories/interfaces/product-repository"
+
 
 export class RegisterProductUseCase {
   constructor(
     private productRepository: ProductRepository,
     private colorRepository: ColorRepository,
-    private productColorRepository: ProductColorRepository
+    private productColorRepository: ProductColorRepository,
+    private productImageRepository: ProductImageRepository,
+    private imageRepository: ImageRepository
   ) { }
 
-  async execute(productData: RegisterProductDTO & { colors?: string[] }) {
+  async execute(productData: RegisterProductDTO & { colors?: string[], images: string[] }) {
     const { discount, price } = productData
 
     if (discount) {
@@ -22,7 +27,7 @@ export class RegisterProductUseCase {
       productData.promotionalPrice = "R$" + calculatedPromotionalPrice
     }
 
-    const { promotionalPrice, categoryId, colors, ...restData } = productData
+    const { promotionalPrice, categoryId, colors, images, ...restData } = productData
     const product = await this.productRepository.create({
       ...restData,
       discount,
@@ -30,6 +35,17 @@ export class RegisterProductUseCase {
       category_id: categoryId,
       promotional_price: promotionalPrice
     })
+
+    const imageUrls = await Promise.all(images.map(async (image) => {
+      const imageUrl = await this.imageRepository.create(image)
+
+      this.productImageRepository.create({
+        image_id: imageUrl.id,
+        product_id: product.id
+      })
+
+      return imageUrl.url
+    }))
 
     if (colors) {
       const colorsAdded = await Promise.all(colors.map(async (hexadecimal) => {
@@ -44,19 +60,21 @@ export class RegisterProductUseCase {
           product_id: product.id
         })
 
-        return color
+        return color.hexadecimal
       }))
 
       return {
         ...product,
-        colors: {
+        colors: [
           ...colorsAdded
-        }
+        ],
+        images: [...imageUrls]
       }
     }
 
     return {
       ...product,
+      images: [...imageUrls]
     }
   }
 }

@@ -1,4 +1,4 @@
-import { MulterRequest, useImageUpload } from "@/hooks/use-image-upload"
+import { MulterRequest, handleImageUpload } from "@/utils/handle-image-upload"
 import { RegisterProductSchema } from "@/schemas/register-product-schema"
 import { ExclusiveFieldError } from "@/use-cases/errors/exclusive-field-error"
 import { MakeRegisterProduct } from "@/use-cases/factories/make-register-product"
@@ -9,13 +9,14 @@ export const registerProduct = async (request: FastifyRequest, reply: FastifyRep
 
   try {
     const data = registerProductSchema.parse(request.body)
-    const [url] = await useImageUpload(request as MulterRequest, "products")
-
+    const urls = await handleImageUpload.
+      uploadMultipleImages(request as MulterRequest, "products")
+    console.log("URLUSECASE", urls)
     const registerProductUseCase = MakeRegisterProduct()
 
     const product = await registerProductUseCase.execute({
       ...data,
-      image: url,
+      images: urls,
       colors: data.colors ? JSON.parse(data.colors) : null
     })
 

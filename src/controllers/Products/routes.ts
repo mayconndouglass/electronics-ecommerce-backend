@@ -9,5 +9,5 @@ export const productsRoutes = async (app: FastifyInstance) => {
 
   const upload = multer({ storage: storage })
 
-  app.post("/products", { preHandler: upload.single("image") }, registerProduct)
+  app.post("/products", { preHandler: upload.array("images") }, registerProduct)
 }

@@ -4,7 +4,7 @@ import { z } from "zod"
 import { PrismaCategoryRepository } from "@/repositories/prisma-category-repository"
 import { RegisterCategoryUseCase } from "@/use-cases/Categories/register-category"
 import { CategoryAlreadyExistsError } from "@/use-cases/errors/category-already-exist-error"
-import { MulterRequest, useImageUpload } from "@/hooks/use-image-upload"
+import { MulterRequest, handleImageUpload } from "@/utils/handle-image-upload"
 
 export const registerCategory = async (request: FastifyRequest, reply: FastifyReply) => {
   const registerCategoryBodySchema = z.object({
@@ -13,7 +13,8 @@ export const registerCategory = async (request: FastifyRequest, reply: FastifyRe
   })
 
   const data = registerCategoryBodySchema.parse(request.body)
-  const [url] = await useImageUpload(request as MulterRequest, "categories")
+  const url = await handleImageUpload.
+    uploadSingleImage(request as MulterRequest, "categories")
 
   try {
     const categoryRepository = new PrismaCategoryRepository()
@@ -27,6 +28,8 @@ export const registerCategory = async (request: FastifyRequest, reply: FastifyRe
 
     throw err
   }
-
+  if (data === undefined) {
+    console.log("olá")
+  }
   return reply.status(201).send()
 }

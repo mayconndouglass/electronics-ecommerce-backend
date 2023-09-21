@@ -30,7 +30,7 @@ model Product {
   Review       Review[]
   ProductColor ProductColor[]
   category_id  String
-  ProducImage  ProducImage[]
+  ProductImage ProductImage[]
 
   @@map("products")
 }
@@ -67,12 +67,12 @@ model ProductColor {
 }
 
 model Image {
-  id          String        @id @default(uuid())
-  url         String        @unique
-  ProducImage ProducImage[]
+  id           String         @id @default(uuid())
+  url          String         @unique
+  ProductImage ProductImage[]
 }
 
-model ProducImage {
+model ProductImage {
   image      Image   @relation(fields: [image_id], references: [id])
   product    Product @relation(fields: [product_id], references: [id])
   image_id   String

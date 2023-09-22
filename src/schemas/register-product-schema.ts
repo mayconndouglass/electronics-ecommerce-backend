@@ -5,8 +5,8 @@ export const RegisterProductSchema = () => {
   return z.object({
     name: z.string(),
     description: z.string(),
-    price: z.string().regex(/^R\$\d+\.\d{2}$/),
-    promotionalPrice: z.string().regex(/^R\$\d+\.\d{2}$/).optional(),
+    price: z.string().regex(/^R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})?$/),
+    promotionalPrice: z.string().regex(/^R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})?$/).optional(),
     discount: z.string().regex(/^0?([1-9][0-9])$/).optional()
       .transform((value) => Number(value)),
     categoryId: z.string(),

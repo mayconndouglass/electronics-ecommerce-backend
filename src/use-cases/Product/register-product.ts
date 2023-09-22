@@ -7,7 +7,6 @@ import { ProductColorRepository } from "@/repositories/interfaces/product-color-
 import { ProductImageRepository } from "@/repositories/interfaces/product-image-repository"
 import { ProductRepository } from "@/repositories/interfaces/product-repository"
 
-
 export class RegisterProductUseCase {
   constructor(
     private productRepository: ProductRepository,
@@ -17,15 +16,34 @@ export class RegisterProductUseCase {
     private imageRepository: ImageRepository
   ) { }
 
-  private calculatePromotionalPrice(price: string, discount: number) {
-    const priceValue = Number(price.trim().replace("R$", ""))
-    const calculatedPromotionalPrice =
-      (priceValue - (priceValue * discount) / 100).toFixed(2)
-
-    return calculatedPromotionalPrice
+  private normalizeValue(value: string) {
+    return Number(value.trim().replace("R$", "").replace(",", "").replace(".", ""))
   }
 
-  private async processImages(urls: string[], product: Product) {
+  private formatCurrency(value: number) {
+    const formattedValue = (value / 100)
+      .toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+
+    return formattedValue
+  }
+
+  private calculatePromotionalPrice(price: string, discount: number) {
+    const priceValue = this.normalizeValue(price)
+    const calculatedPromotionalPrice = (priceValue - (priceValue * (discount / 100)))
+    const formatedPromotionalPrice = this.formatCurrency(calculatedPromotionalPrice)
+
+    return formatedPromotionalPrice
+  }
+
+  private calculateDiscount(price: string, promotionalPrice: string) {
+    const priceValue = this.normalizeValue(price)
+    const promotionalPriceValue = this.normalizeValue(promotionalPrice)
+    const calculedDiscount = (priceValue - promotionalPriceValue) / priceValue * 100
+
+    return Math.ceil(calculedDiscount)
+  }
+
+  private async storeImagesInDatabase(urls: string[], product: Product) {
     const imageUrls = await Promise.all(urls.map(async (url) => {
       const image = await this.imageRepository.create(url)
 
@@ -40,7 +58,7 @@ export class RegisterProductUseCase {
     return imageUrls
   }
 
-  private async processColors(colors: string[], product: Product) {
+  private async storeColorsInDatabase(colors: string[], product: Product) {
     const hexadecimals = await Promise.all(colors.map(async (hexadecimal) => {
       let color = await this.colorRepository.findByHexadecimal(hexadecimal)
 
@@ -60,27 +78,26 @@ export class RegisterProductUseCase {
   }
 
   async execute(productData: RegisterProductDTO & { colors?: string[], images: string[] }) {
-    const { discount, price } = productData
+    const { price, categoryId, colors, images, ...restData } = productData
+    let { discount, promotionalPrice } = productData
 
-    if (discount) {
-      const calculatedPromotionalPrice = this.calculatePromotionalPrice(price, discount)
+    discount
+      ? promotionalPrice = this.calculatePromotionalPrice(price, discount)
+      : discount = this.calculateDiscount(price, promotionalPrice!)
 
-      productData.promotionalPrice = "R$" + calculatedPromotionalPrice
-    }
-
-    const { promotionalPrice, categoryId, colors, images, ...restData } = productData
     const product = await this.productRepository.create({
-      ...restData,
+      name: restData.name,
+      description: restData.description,
       discount,
       price,
       category_id: categoryId,
       promotional_price: promotionalPrice
     })
 
-    const imageUrls = await this.processImages(images, product)
+    const imageUrls = await this.storeImagesInDatabase(images, product)
 
     if (colors) {
-      const hexadecimals = await this.processColors(colors, product)
+      const hexadecimals = await this.storeColorsInDatabase(colors, product)
 
       return {
         ...product,

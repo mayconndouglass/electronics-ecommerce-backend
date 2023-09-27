@@ -1,8 +1,8 @@
 import { PrismaProductRepository } from "@/repositories/prisma-product-repository"
 import { FetchAllProductsUseCase } from "@/use-cases/Product/fetch-all-products"
-import { FastifyReply } from "fastify"
+import { FastifyReply, FastifyRequest } from "fastify"
 
-export const FetchAllProducts = async (reply: FastifyReply) => {
+export const fetchAllProducts = async (request: FastifyRequest, reply: FastifyReply) => {
   const productRepository = new PrismaProductRepository()
   const fetchAllUseCase = new FetchAllProductsUseCase(productRepository)
 

@@ -81,9 +81,13 @@ export class RegisterProductUseCase {
     const { price, categoryId, colors, images, ...restData } = productData
     let { discount, promotionalPrice } = productData
 
-    discount
-      ? promotionalPrice = this.calculatePromotionalPrice(price, discount)
-      : discount = this.calculateDiscount(price, promotionalPrice!)
+    if (discount) {
+      promotionalPrice = this.calculatePromotionalPrice(price, discount)
+    }
+
+    if (promotionalPrice) {
+      discount = this.calculateDiscount(price, promotionalPrice)
+    }
 
     const product = await this.productRepository.create({
       name: restData.name,

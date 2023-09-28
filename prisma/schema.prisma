@@ -70,6 +70,8 @@ model Image {
   id           String         @id @default(uuid())
   url          String         @unique
   ProductImage ProductImage[]
+
+  @@map("images")
 }
 
 model ProductImage {

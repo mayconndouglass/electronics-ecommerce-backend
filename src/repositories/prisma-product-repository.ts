@@ -1,13 +1,14 @@
 import { Prisma } from "@prisma/client"
-// import { ProductRepository } from "./interfaces/product-repository"
+import { ProductRepository } from "./interfaces/product-repository"
 import { prisma } from "@/lib/prisma"
+import { ProductType } from "@/types/product"
 
-export class PrismaProductRepository {
+export class PrismaProductRepository implements ProductRepository {
   async fetchAllProducts() {
-    const products = await prisma.$queryRaw`
+    const products: ProductType[] = await prisma.$queryRaw`
       SELECT P.*, C.name AS category_name,
         (
-          SELECT ARRAY_AGG(CO.hexadecimal)
+          SELECT json_agg(json_build_object('id', CO.id, 'hexadecimal', CO.hexadecimal))
           FROM product_color PC
           JOIN colors CO ON CO.id = PC.color_id
           WHERE PC.product_id = P.id

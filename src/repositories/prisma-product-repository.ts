@@ -2,11 +2,28 @@ import { Prisma } from "@prisma/client"
 import { ProductRepository } from "./interfaces/product-repository"
 import { prisma } from "@/lib/prisma"
 import { ProductType } from "@/types/product"
-import { ProducOnSaletType } from "@/types/product-on-sale"
+import { ProductTypeTwo } from "@/types/product-type-two"
 
 export class PrismaProductRepository implements ProductRepository {
+  async fetchFeaturedProducts(): Promise<ProductTypeTwo[]> {
+    const featuredProducts: ProductTypeTwo[] = await prisma.$queryRaw`
+      SELECT p.*,
+      (
+        SELECT I.url
+        FROM product_image PI
+        JOIN images I ON I.id = PI.image_id
+        WHERE PI.product_id = P.id
+        LIMIT 1
+      ) AS image_url
+      FROM products P
+      LIMIT 16
+    `
+
+    return featuredProducts
+  }
+
   async fetchAllProductOnsale() {
-    const productsOnSale: ProducOnSaletType[] = await prisma.$queryRaw`
+    const productsOnSale: ProductTypeTwo[] = await prisma.$queryRaw`
       SELECT p.*,
       (
         SELECT I.url

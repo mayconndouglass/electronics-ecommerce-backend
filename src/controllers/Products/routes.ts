@@ -6,6 +6,7 @@ import { fetchFeaturedProducts } from "./fetch-featured-products-controller"
 
 import { storage } from "../../middlewares/multer"
 import multer from "fastify-multer"
+import { getProductController } from "./get-product-details-controller"
 
 export const productsRoutes = async (app: FastifyInstance) => {
   app.register(multer.contentParser)
@@ -15,4 +16,5 @@ export const productsRoutes = async (app: FastifyInstance) => {
   app.get("/products", fetchAllProducts)
   app.get("/products-on-sale", fetchAllProductsOnSale)
   app.get("/featured-products", fetchFeaturedProducts)
+  app.get("/product/:id", getProductController)
 }

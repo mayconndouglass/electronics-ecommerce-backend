@@ -7,4 +7,5 @@ export interface ProductRepository {
   fetchAllProducts(): Promise<ProductType[]>
   fetchAllProductOnsale(): Promise<ProductTypeTwo[]>
   fetchFeaturedProducts(): Promise<ProductTypeTwo[]>
+  findProductById(id: string): Promise<ProductType | null>
 }

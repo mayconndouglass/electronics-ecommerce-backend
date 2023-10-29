@@ -31,20 +31,9 @@ model Product {
   ProductColor ProductColor[]
   category_id  String
   ProductImage ProductImage[]
+  CartItem     CartItem[]
 
   @@map("products")
-}
-
-// Falta criar a tablea usuario para relacionar a essa tabela Review
-model Review {
-  id     String @id @default(uuid())
-  stars  Int
-  coment String
-
-  product    Product @relation(fields: [product_id], references: [id])
-  product_id String
-
-  @@map("reviews")
 }
 
 model Color {
@@ -82,4 +71,51 @@ model ProductImage {
 
   @@id([image_id, product_id])
   @@map("product_image")
+}
+
+// Falta criar a tablea usuario para relacionar a essa tabela Review
+model Review {
+  id     String @id @default(uuid())
+  stars  Int
+  coment String
+
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id String
+
+  @@map("reviews")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  image         String?
+  password_hash String
+  created_at    DateTime @default(now())
+  Cart          Cart[]
+
+  @@map("users")
+}
+
+model Cart {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    String
+  created_at DateTime @default(now())
+
+  CartItem CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id         String  @id @default(uuid())
+  cart       Cart    @relation(fields: [cart_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
+  cart_id    String
+  product_id String
+  quantity   Int
+  price      String
+
+  @@map("cart_itens")
 }

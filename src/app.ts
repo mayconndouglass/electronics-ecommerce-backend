@@ -5,17 +5,18 @@ import { ZodError } from "zod"
 import { env } from "./env"
 import { categoriesRoutes } from "./controllers/Categories/routes"
 import { productsRoutes } from "./controllers/Products/routes"
+import { usersRoutes } from "./controllers/Users/routes"
 
 export const app = fastify()
 
 app.register(categoriesRoutes)
 app.register(productsRoutes)
+app.register(usersRoutes)
 
 app.register(cors, {
   origin: ["http://localhost:5173"],
   methods: ["GET", "POST"],
 })
-
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {

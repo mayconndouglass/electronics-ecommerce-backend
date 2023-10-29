@@ -28,8 +28,6 @@ export const registerCategory = async (request: FastifyRequest, reply: FastifyRe
 
     throw err
   }
-  if (data === undefined) {
-    console.log("olá")
-  }
+
   return reply.status(201).send()
 }

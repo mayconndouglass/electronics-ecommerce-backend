@@ -25,12 +25,10 @@ export const AddItemToCart = async (request: FastifyRequest, reply: FastifyReply
     )
 
     const item = await addItemToCartUseCase.execute(data)
-    console.log("Não deveria chegar até aqui")
+
     return reply.status(200).send({ item })
   } catch (err) {
-    console.log("ENTROU NO CATCH")
     if (err instanceof UserAlreadyHasAnOpenCartError) {
-      console.log("ENTROU NO IF DO CATCH")
       return reply.status(400).send({ message: err.message })
     }
 

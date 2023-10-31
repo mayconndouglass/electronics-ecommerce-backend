@@ -14,7 +14,6 @@ export class AddItemToCartUseCase {
       await this.cartRepository.findByUserId(data.user_id)
 
     if (doesTheUserAlreadyHaveACart) {
-      console.log("ENTROU NA CONDITION")
       throw new UserAlreadyHasAnOpenCartError()
     }
 

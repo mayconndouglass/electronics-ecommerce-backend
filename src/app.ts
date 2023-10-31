@@ -7,6 +7,7 @@ import { env } from "./env"
 import { categoriesRoutes } from "./controllers/Categories/routes"
 import { productsRoutes } from "./controllers/Products/routes"
 import { usersRoutes } from "./controllers/Users/routes"
+import { cartRoutes } from "./controllers/Carts/routes"
 
 export const app = fastify()
 app.register(fastifyJwt, { secret: env.JWT_SECRET })
@@ -14,6 +15,7 @@ app.register(fastifyJwt, { secret: env.JWT_SECRET })
 app.register(categoriesRoutes)
 app.register(productsRoutes)
 app.register(usersRoutes)
+app.register(cartRoutes)
 
 app.register(cors, {
   origin: ["http://localhost:5173"],

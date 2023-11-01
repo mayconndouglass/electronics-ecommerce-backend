@@ -9,7 +9,7 @@ export class AddItemToCartUseCase {
     private cartItemRepository: CartItemRepository
   ) { }
 
-  async execute(data: RegisterCartItemDTO) {
+  async execute(data: Omit<RegisterCartItemDTO, "cart_id"> & { cart_id?: string }) {
     const doesTheUserAlreadyHaveACart =
       await this.cartRepository.findByUserId(data.user_id)
 
@@ -21,7 +21,7 @@ export class AddItemToCartUseCase {
       data.cart_id = (await this.cartRepository.create({ user_id: data.user_id })).id
     }
 
-    const cartItem = await this.cartItemRepository.create(data)
+    const cartItem = await this.cartItemRepository.create(data as RegisterCartItemDTO)
 
     return { item: cartItem }
   }

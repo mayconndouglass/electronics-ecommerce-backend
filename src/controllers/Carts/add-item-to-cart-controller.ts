@@ -1,9 +1,14 @@
-import { PrismaCartItemRepository } from "@/repositories/prisma-cart-item-repository"
-import { PrismaCartRepository } from "@/repositories/prisma-cart-repository"
-import { AddItemToCartUseCase } from "@/use-cases/Cart/add-item-to-cart"
-import { UserAlreadyHasAnOpenCartError } from "@/use-cases/errors/user-already-has-an-open-cart-error"
 import { FastifyReply, FastifyRequest } from "fastify"
 import { z } from "zod"
+
+import { AddItemToCartUseCase } from "@/use-cases/Cart/add-item-to-cart"
+
+import { PrismaCartItemRepository } from "@/repositories/prisma-cart-item-repository"
+import { PrismaCartRepository } from "@/repositories/prisma-cart-repository"
+
+import { NotAllowedError } from "@/use-cases/errors/not-allowed-error"
+import { UserAlreadyHasAnOpenCartError } from "@/use-cases/errors/user-already-has-an-open-cart-error"
+
 
 export const AddItemToCart = async (request: FastifyRequest, reply: FastifyReply) => {
   const addItemToCartBodySchema = z.object({
@@ -26,10 +31,14 @@ export const AddItemToCart = async (request: FastifyRequest, reply: FastifyReply
 
     const item = await addItemToCartUseCase.execute(data)
 
-    return reply.status(200).send({ item })
+    return reply.status(200).send(item)
   } catch (err) {
     if (err instanceof UserAlreadyHasAnOpenCartError) {
       return reply.status(400).send({ message: err.message })
+    }
+
+    if (err instanceof NotAllowedError) {
+      reply.status(403).send({ message: err.message })
     }
 
     throw err

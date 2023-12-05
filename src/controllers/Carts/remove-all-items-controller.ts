@@ -1,11 +1,17 @@
-import { PrismaCartItemRepository } from "@/repositories/prisma-cart-item-repository"
-import { PrismaCartRepository } from "@/repositories/prisma-cart-repository"
-import { RemoveAllItemsUseCase } from "@/use-cases/Cart/remove-all-items"
-import { CartDoesNotExist } from "@/use-cases/errors/cart-does-not-exist-error"
 import { FastifyReply, FastifyRequest } from "fastify"
 import { z } from "zod"
 
-export const RemoveAllItems = async (request: FastifyRequest, reply: FastifyReply) => {
+import { RemoveAllItemsUseCase } from "@/use-cases/Cart/remove-all-items"
+import { PrismaCartItemRepository } from "@/repositories/prisma-cart-item-repository"
+import { PrismaCartRepository } from "@/repositories/prisma-cart-repository"
+
+import { CartDoesNotExist } from "@/use-cases/errors/cart-does-not-exist-error"
+
+
+export const RemoveAllItems = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
   const removeAllItemsBodySchema = z.object({
     id: z.string()
   })

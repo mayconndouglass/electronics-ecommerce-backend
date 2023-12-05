@@ -1,5 +1,5 @@
 import { RegisterCartItemDTO } from "@/dtos/RegisterCartItemDTO"
-import { CartItemRepository } from "./interfaces/item-cart-repository"
+import { CartItemRepository } from "./interfaces/cart-item-repository"
 import { prisma } from "@/lib/prisma"
 
 export class PrismaCartItemRepository implements CartItemRepository {
@@ -9,18 +9,15 @@ export class PrismaCartItemRepository implements CartItemRepository {
     return cart
   }
 
-  async fetchAllItemsFromCart(cartId: string) {
-    const items = await prisma.cartItem.findMany({
-      where: {
-        cart_id: cartId
-      }
-    })
-
-    return items
-  }
-
   async findById(itemId: string) {
     const item = await prisma.cartItem.findUnique({ where: { id: itemId } })
+
+    return item
+  }
+
+  async findByProductId(productId: string) {
+    const item = await prisma.cartItem
+      .findFirst({ where: { product_id: productId } })
 
     return item
   }
@@ -33,13 +30,14 @@ export class PrismaCartItemRepository implements CartItemRepository {
     await prisma.cartItem.deleteMany({ where: { cart_id: cartId } })
   }
 
-  async updateQuantity(itemId: string, quantity: number) {
+  async updateQuantity(itemId: string, quantity: number, price: string) {
     const item = await prisma.cartItem.update({
       where: {
         id: itemId
       },
       data: {
-        quantity: quantity
+        quantity,
+        price
       }
     })
 

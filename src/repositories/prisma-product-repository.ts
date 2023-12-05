@@ -5,11 +5,15 @@ import { ProductType } from "@/types/product"
 import { ProductTypeTwo } from "@/types/product-type-two"
 
 export class PrismaProductRepository implements ProductRepository {
-  async findProductById(id: string): Promise<ProductType> {
-    const product: ProductType = await prisma.$queryRaw`
+  async findProductById(id: string) {
+    const product: ProductType[] = await prisma.$queryRaw`
       SELECT P.*, C.name AS category_name,
         (
-          SELECT json_agg(json_build_object('id', CO.id, 'hexadecimal', CO.hexadecimal))
+          SELECT json_agg(json_build_object(
+            'id', CO.id,
+            'hexadecimal',
+            CO.hexadecimal
+          ))
           FROM product_color PC
           JOIN colors CO ON CO.id = PC.color_id
           WHERE PC.product_id = P.id
@@ -25,7 +29,11 @@ export class PrismaProductRepository implements ProductRepository {
       WHERE P.id = ${id};
     `
 
-    return product
+    if (!product) {
+      return null
+    }
+
+    return product[0]
   }
 
   async fetchFeaturedProducts(): Promise<ProductTypeTwo[]> {

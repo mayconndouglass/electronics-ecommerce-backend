@@ -1,16 +1,27 @@
-import { CartItemRepository } from "@/repositories/interfaces/item-cart-repository"
+import { CartItemRepository } from "@/repositories/interfaces/cart-item-repository"
 import { ResourceNotFoundError } from "../errors/resource-not-found-error"
+import { CartRepository } from "@/repositories/interfaces/cart-repository"
+import { NotAllowedError } from "../errors/not-allowed-error"
 
 export class RemoveItemFromCartUseCase {
-  constructor(private cartItemRepository: CartItemRepository) { }
+  constructor(
+    private cartItemRepository: CartItemRepository,
+    private cartRepository: CartRepository
+  ) { }
 
-  async execute(itemId: string) {
-    const item = await this.cartItemRepository.findById(itemId)
+  async execute(productId: string, cartId: string) {
+    const itemExists = await this.cartItemRepository.findByProductId(productId)
+    const cartExists = await this.cartRepository.findById(cartId)
 
-    if (!item) {
+    //TODO: Ainda falta testar se o user é o dono do cart, fazer isso quando a rota estiver com authenticate
+    if (!itemExists || !cartExists) {
       throw new ResourceNotFoundError()
     }
 
-    await this.cartItemRepository.removeItem(itemId)
+    if (cartExists.id !== itemExists.cart_id) {
+      throw new NotAllowedError()
+    }
+
+    await this.cartItemRepository.removeItem(itemExists.id)
   }
 }

@@ -1,7 +1,7 @@
 export class RegisterCartItemDTO {
-  cart_id: string
-  product_id: string
-  user_id: string
+  userId: string
+  cartId: string
+  productId: string
   quantity: number
   price: string
 }

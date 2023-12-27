@@ -8,14 +8,13 @@ export class RemoveAllItemsUseCase {
     private cartItemRepository: CartItemRepository
   ) { }
 
-  //TODO: Acredito que falta verificar se o id do user que está fazendo a request é o dono do carrinho, não fiz logo agora pq creio que possa ser uma boa, pegar o id pelo SUT, ou seja, jtw/token/authentication
-  async execute(cartId: string) {
-    const cart = await this.cartRepository.findById(cartId)
+  async execute(userId: string) {
+    const cart = await this.cartRepository.findByUserId(userId)
 
     if (!cart) {
       throw new CartDoesNotExist()
     }
 
-    await this.cartItemRepository.removeAllItems(cartId)
+    await this.cartItemRepository.removeAllItems(cart.id)
   }
 }

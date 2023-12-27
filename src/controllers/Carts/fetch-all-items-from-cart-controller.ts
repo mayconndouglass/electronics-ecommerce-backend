@@ -1,4 +1,3 @@
-import { z } from "zod"
 import { FastifyReply, FastifyRequest } from "fastify"
 
 import { PrismaCartRepository } from "@/repositories/prisma-cart-repository"
@@ -9,19 +8,15 @@ export const FetchAllItemsFromCart = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  const fetchAllItemsQuerySchema = z.object({
-    id: z.string()
-  })
-
-  const { id } = fetchAllItemsQuerySchema.parse(request.params)
-
   try {
     const CartRepository = new PrismaCartRepository()
     const fetchAllItemsFromCartUseCase = new FetchAllItemsFromCartUseCase(
       CartRepository
     )
 
-    const items = await fetchAllItemsFromCartUseCase.execute(id)
+    const user = request.user.sub
+
+    const items = await fetchAllItemsFromCartUseCase.execute(user)
 
     return reply.status(200).send(items)
   } catch (err) {

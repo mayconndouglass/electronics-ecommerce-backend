@@ -1,42 +1,39 @@
 import { CartRepository } from "@/repositories/interfaces/cart-repository"
 import { CartItemRepository } from "@/repositories/interfaces/cart-item-repository"
 import { RegisterCartItemDTO } from "@/dtos/RegisterCartItemDTO"
-import { UserAlreadyHasAnOpenCartError } from "../errors/user-already-has-an-open-cart-error"
 import { NotAllowedError } from "../errors/not-allowed-error"
+import { UserRepository } from "@/repositories/interfaces/user-repository"
+import { ResourceNotFoundError } from "../errors/resource-not-found-error"
 
 export class AddItemToCartUseCase {
   constructor(
     private cartRepository: CartRepository,
-    private cartItemRepository: CartItemRepository
+    private cartItemRepository: CartItemRepository,
+    private userRepository: UserRepository
   ) { }
 
-  async execute(
-    data: Omit<RegisterCartItemDTO, "cart_id"> & { cart_id?: string }
-  ) {
-    const cartDoesNotExist = !data.cart_id
+  async execute(data: Omit<RegisterCartItemDTO, "cartId">) {
+    const user = await this.userRepository.findById(data.userId)
 
-    if (cartDoesNotExist) {
-      const doesTheUserAlreadyHaveACart =
-        await this.cartRepository.findByUserId(data.user_id)
+    if (!user) {
+      throw new ResourceNotFoundError()
+    }
 
-      if (doesTheUserAlreadyHaveACart) {
-        throw new UserAlreadyHasAnOpenCartError()
-      }
+    let cart = await this.cartRepository.findByUserId(user.id)
 
-      data.cart_id = (await this.cartRepository.create({
-        user_id: data.user_id
-      })).id
+    if (!cart) {
+      cart = await this.cartRepository.create(data)
     }
 
     const productExists = await this.cartItemRepository
-      .findByProductId(data.product_id)
+      .findByProductId(data.productId)
 
     if (productExists) {
       throw new NotAllowedError()
     }
 
     const cartItem = await this.cartItemRepository
-      .create(data as RegisterCartItemDTO)
+      .create({ ...data, cartId: cart.id })
 
     return { item: cartItem }
   }

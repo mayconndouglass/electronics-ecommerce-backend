@@ -10,15 +10,12 @@ import { NotAllowedError } from "@/use-cases/errors/not-allowed-error"
 export const RemoveItemFromCart = async (
   request: FastifyRequest, reply: FastifyReply
 ) => {
-  const removeItemFromCartBodySchema = z.object({
+  const removeItemFromCartParamSchema = z.object({
     id: z.string(),
-    cartId: z.string(),
   })
 
-  const {
-    id: itemId,
-    cartId
-  } = removeItemFromCartBodySchema.parse(request.body)
+  const { id: itemId, } = removeItemFromCartParamSchema.parse(request.params)
+  const userId = request.user.sub
 
   try {
     const cartItemRepository = new PrismaCartItemRepository()
@@ -28,12 +25,12 @@ export const RemoveItemFromCart = async (
       cartRepository
     )
 
-    await removeItemFromCartUseCase.execute(itemId, cartId)
+    await removeItemFromCartUseCase.execute(itemId, userId)
 
     return reply.status(204).send()
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
-      return reply.status(404).send(err.message)
+      return reply.status(404).send({ message: err.message })
     }
 
     if (err instanceof NotAllowedError) {

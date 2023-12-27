@@ -3,21 +3,41 @@ import { CartItemRepository } from "./interfaces/cart-item-repository"
 import { prisma } from "@/lib/prisma"
 
 export class PrismaCartItemRepository implements CartItemRepository {
+  async findByProductId(productId: string) {
+    const cartItem = await prisma.cartItem.findFirst({
+      where: { product_id: productId }
+    })
+
+    return cartItem
+  }
+
+  async findByCartIdAndProductId(cartId: string, productId: string) {
+    const cartItem = await prisma.cartItem.findFirst({
+      where: {
+        cart_id: cartId,
+        product_id: productId
+      }
+    })
+
+    return cartItem
+  }
+
   async create(data: RegisterCartItemDTO) {
-    const cart = await prisma.cartItem.create({ data })
+    const cart = await prisma.cartItem.create({
+      data: {
+        cart_id: data.cartId,
+        product_id: data.productId,
+        quantity: data.quantity,
+        user_id: data.userId,
+        price: data.price,
+      }
+    })
 
     return cart
   }
 
   async findById(itemId: string) {
     const item = await prisma.cartItem.findUnique({ where: { id: itemId } })
-
-    return item
-  }
-
-  async findByProductId(productId: string) {
-    const item = await prisma.cartItem
-      .findFirst({ where: { product_id: productId } })
 
     return item
   }

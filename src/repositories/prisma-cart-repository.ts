@@ -41,8 +41,8 @@ export class PrismaCartRepository implements CartRepository {
     return cart
   }
 
-  async create(data: { user_id: string; }) {
-    const cart = await prisma.cart.create({ data })
+  async create({ userId }: { userId: string; }) {
+    const cart = await prisma.cart.create({ data: { user_id: userId } })
 
     return cart
   }

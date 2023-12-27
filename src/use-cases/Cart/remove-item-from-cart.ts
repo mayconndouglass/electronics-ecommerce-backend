@@ -9,11 +9,10 @@ export class RemoveItemFromCartUseCase {
     private cartRepository: CartRepository
   ) { }
 
-  async execute(productId: string, cartId: string) {
+  async execute(productId: string, userId: string) {
     const itemExists = await this.cartItemRepository.findByProductId(productId)
-    const cartExists = await this.cartRepository.findById(cartId)
+    const cartExists = await this.cartRepository.findByUserId(userId)
 
-    //TODO: Ainda falta testar se o user é o dono do cart, fazer isso quando a rota estiver com authenticate
     if (!itemExists || !cartExists) {
       throw new ResourceNotFoundError()
     }

@@ -1,20 +1,16 @@
 import { FastifyReply, FastifyRequest } from "fastify"
 import { z } from "zod"
 
-import { AddItemToCartUseCase } from "@/use-cases/Cart/add-item-to-cart"
-
-import { PrismaCartItemRepository } from "@/repositories/prisma-cart-item-repository"
-import { PrismaCartRepository } from "@/repositories/prisma-cart-repository"
-
 import { NotAllowedError } from "@/use-cases/errors/not-allowed-error"
-import { UserAlreadyHasAnOpenCartError } from "@/use-cases/errors/user-already-has-an-open-cart-error"
+import { ResourceNotFoundError } from "@/use-cases/errors/resource-not-found-error"
+import { MakeAddItemToCart } from "@/use-cases/factories/make-add-item-to-cart"
 
-
-export const AddItemToCart = async (request: FastifyRequest, reply: FastifyReply) => {
+export const AddItemToCart = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
   const addItemToCartBodySchema = z.object({
-    cart_id: z.string().optional(),
-    product_id: z.string(),
-    user_id: z.string(),
+    productId: z.string(),
     quantity: z.number(),
     price: z.string()
   })
@@ -22,19 +18,16 @@ export const AddItemToCart = async (request: FastifyRequest, reply: FastifyReply
   const data = addItemToCartBodySchema.parse(request.body)
 
   try {
-    const cartRepository = new PrismaCartRepository()
-    const cartItemRepository = new PrismaCartItemRepository()
-    const addItemToCartUseCase = new AddItemToCartUseCase(
-      cartRepository,
-      cartItemRepository
-    )
+    const addItemToCartUseCase = MakeAddItemToCart()
 
-    const item = await addItemToCartUseCase.execute(data)
+    const user = request.user.sub
+
+    const item = await addItemToCartUseCase.execute({ ...data, userId: user })
 
     return reply.status(200).send(item)
   } catch (err) {
-    if (err instanceof UserAlreadyHasAnOpenCartError) {
-      return reply.status(400).send({ message: err.message })
+    if (err instanceof ResourceNotFoundError) {
+      return reply.status(404).send({ message: err.message })
     }
 
     if (err instanceof NotAllowedError) {

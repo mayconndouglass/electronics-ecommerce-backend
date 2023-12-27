@@ -4,10 +4,13 @@ import { InvalidCredentialsError } from "@/use-cases/errors/invalid-credentials-
 import { FastifyReply, FastifyRequest } from "fastify"
 import { z } from "zod"
 
-export const AuthenticateUser = async (request: FastifyRequest, reply: FastifyReply) => {
+export const AuthenticateUser = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
   const authenticadeBodySchema = z.object({
     email: z.string().email(),
-    password: z.string(),//TODO: PENSAR SOBRE A NECESSIDADE DE DEIXAR ESSA SENHA MAIS COMPLEXA
+    password: z.string().min(6),//TODO: PENSAR SOBRE A NECESSIDADE DE DEIXAR ESSA SENHA MAIS COMPLEXA
   })
 
   const { email, password } = authenticadeBodySchema.parse(request.body)
@@ -27,10 +30,12 @@ export const AuthenticateUser = async (request: FastifyRequest, reply: FastifyRe
       }
     })
 
-    return reply.status(200).send({ token })
+    return reply.status(200).send({
+      user: { ...user, password_hash: undefined },
+      token
+    })
 
   } catch (err) {
-
     if (err instanceof InvalidCredentialsError) {
       return reply.status(400).send({ message: err.message })
     }

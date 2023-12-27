@@ -15,3 +15,11 @@ export type CartItemType = {
     ]
   }
 }
+
+export type CartItemFrontEndType = {
+  id: string,//Esse Id é do produto
+  name: string,
+  price: string,
+  quantity: number,
+  imageUrl: string
+}

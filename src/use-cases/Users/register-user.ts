@@ -9,16 +9,17 @@ export class RegisterUserUseCase {
   async execute(
     data: Omit<RegisterUserDTO, "password_hash"> & { password: string }
   ) {
-    const emailWithSameEmail = await this.userRepository.findByEmail(data.email)
+    const userWithSameEmail = await this.userRepository.findByEmail(data.email)
 
-    if (emailWithSameEmail) {
+    if (userWithSameEmail) {
       throw new EmailAlreadyExistsError()
     }
 
     const { password, ...restData } = data
     const password_hash = await hash(password, 6)
 
-    const user = await this.userRepository.create({ ...restData, password_hash })
+    const user = await this.userRepository
+      .create({ ...restData, password_hash })
 
     return {
       user

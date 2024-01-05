@@ -133,6 +133,6 @@ model FavoriteItem {
   product_id String   @map("product_id")
   created_at DateTime @default(now())
 
-  @@id([user_id, product_id])
+  @@id(name: "favoriteItem", [user_id, product_id])
   @@map("favorite_items")
 }

@@ -22,7 +22,7 @@ export class AddItemToFavoritesUseCase {
       throw new ResourceNotFoundError()
     }
 
-    const itemExists = await this.favoritemRepository.findItemByUser(
+    const itemExists = await this.favoritemRepository.findItemByIds(
       userId,
       productId
     )

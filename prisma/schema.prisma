@@ -32,6 +32,7 @@ model Product {
   category_id  String
   ProductImage ProductImage[]
   CartItem     CartItem[]
+  FavoriteItem FavoriteItem[]
 
   @@map("products")
 }
@@ -73,7 +74,6 @@ model ProductImage {
   @@map("product_image")
 }
 
-// Falta criar a tablea usuario para relacionar a essa tabela Review
 model Review {
   id     String @id @default(uuid())
   stars  Int
@@ -92,8 +92,9 @@ model User {
   password_hash String
   created_at    DateTime @default(now())
 
-  Cart     Cart[]
-  CartItem CartItem[]
+  Cart         Cart[]
+  CartItem     CartItem[]
+  FavoriteItem FavoriteItem[]
 
   @@map("users")
 }
@@ -121,5 +122,17 @@ model CartItem {
   user_id    String
   price      String
 
-  @@map("cart_itens")
+  @@map("cart_itens") //TODO: Aqui está escrito errado, não mudei assim qe vi p n perder dados
+}
+
+model FavoriteItem {
+  user    User    @relation(fields: [user_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  user_id    String   @map("user_id")
+  product_id String   @map("product_id")
+  created_at DateTime @default(now())
+
+  @@id([user_id, product_id])
+  @@map("favorite_items")
 }

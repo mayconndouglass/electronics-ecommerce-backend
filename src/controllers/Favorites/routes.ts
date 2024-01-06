@@ -10,8 +10,8 @@ export const favoriteRoutes = async (app: FastifyInstance) => {
     { onRequest: [verifyJwt] },
     addItemToFavorites
   )
-  app.post(
-    "/wish-list/remove-item-from-favorites",
+  app.delete(
+    "/wish-list/remove-item-from-favorites/:id",
     { onRequest: [verifyJwt] },
     removeItemFromFavorites
   )

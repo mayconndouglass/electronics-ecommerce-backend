@@ -11,11 +11,13 @@ export const removeItemFromFavorites = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  const removeItemFromFavoritesBodySchema = z.object({
-    productId: z.string()
+  const removeItemFromFavoritesParamsSchema = z.object({
+    id: z.string()
   })
 
-  const { productId } = removeItemFromFavoritesBodySchema.parse(request.body)
+  const {
+    id: productId
+  } = removeItemFromFavoritesParamsSchema.parse(request.params)
 
   try {
     const favoriteRepository = new PrismaFavoriteItemRepository()

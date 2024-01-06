@@ -4,6 +4,18 @@ import { RegisterFavoriteItemDTO } from "@/dtos/RegisterFavoriteItemDTO"
 import { FavoriteItemRepository } from "./interfaces/favorite-item-repository"
 
 export class PrismaFavoriteItemRepository implements FavoriteItemRepository {
+  async findManyByUser(userId: string) {
+    const items = await prisma.favoriteItem.findMany({
+      where: { user_id: userId },
+      select: {
+        product_id: true,
+        created_at: true
+      }
+    })
+
+    return items
+  }
+
   async removeItem(userId: string, productId: string) {
     await prisma.favoriteItem.delete({
       where: {

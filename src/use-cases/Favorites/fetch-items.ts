@@ -17,6 +17,17 @@ export class FetchItemsUseCase {
 
     const items = await this.favoriteItemRepository.findManyByUser(userId)
 
-    return items
+    const mappingFavoriteItems = items.map(item => {
+      const { product } = item
+
+      return {
+        id: product.id,
+        price: product.promotional_price ?? product.price,
+        name: product.name,
+        imageUrl: product.ProductImage[0].image.url
+      }
+    })
+
+    return mappingFavoriteItems
   }
 }

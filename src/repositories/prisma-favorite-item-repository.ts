@@ -8,8 +8,24 @@ export class PrismaFavoriteItemRepository implements FavoriteItemRepository {
     const items = await prisma.favoriteItem.findMany({
       where: { user_id: userId },
       select: {
-        product_id: true,
-        created_at: true
+        product: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            promotional_price: true,
+            ProductImage: {
+              select: {
+                image: {
+                  select: {
+                    url: true,
+                  }
+                }
+              },
+              take: 1
+            }
+          }
+        }
       }
     })
 

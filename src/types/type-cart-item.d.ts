@@ -16,6 +16,20 @@ export type CartItemType = {
   }
 }
 
+export interface FavoriteItemType {
+  product: {
+    id: string;
+    price: string;
+    name: string;
+    promotional_price: string | null
+    ProductImage: {
+      image: {
+        url: string
+      }
+    }[]
+  }
+}
+
 export type CartItemFrontEndType = {
   id: string,//Esse Id é do produto
   name: string,

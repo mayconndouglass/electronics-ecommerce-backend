@@ -3,6 +3,8 @@ import { FastifyInstance } from "fastify"
 import { addItemToFavorites } from "./add-item-to-favorites-controller"
 import { removeItemFromFavorites } from "./remove-item-from-favorites-controller"
 import { FetchItemsController } from "./fetch-items-controller"
+import { updateFavoriteItems } from "./update-favorite-items-controller"
+
 
 export const favoriteRoutes = async (app: FastifyInstance) => {
   app.post(
@@ -19,5 +21,10 @@ export const favoriteRoutes = async (app: FastifyInstance) => {
     "/wish-list/favorite-items",
     { onRequest: [verifyJwt] },
     FetchItemsController
+  )
+  app.patch(
+    "/wish-list/update-favorite-items",
+    { onRequest: [verifyJwt] },
+    updateFavoriteItems
   )
 }

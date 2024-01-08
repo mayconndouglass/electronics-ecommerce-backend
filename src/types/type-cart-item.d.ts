@@ -37,3 +37,10 @@ export type CartItemFrontEndType = {
   quantity: number,
   imageUrl: string
 }
+
+export type FavoriteItemFrontEndType = {
+  id: string,
+  name: string,
+  price: string,
+  imageUrl: string
+}

@@ -22,8 +22,8 @@ export class ChangeQuantityOfItemsUseCase {
     return formatedPrice
   }
 
-  async execute(itemId: string, quantity: number) {
-    const item = await this.cartItemRepository.findByProductId(itemId)
+  async execute(userId: string, itemId: string, quantity: number) {
+    const item = await this.cartItemRepository.findByProductId(userId, itemId)
 
     if (!item) {
       throw new ResourceNotFoundError()

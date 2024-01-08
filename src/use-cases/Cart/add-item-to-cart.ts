@@ -26,7 +26,7 @@ export class AddItemToCartUseCase {
     }
 
     const productExists = await this.cartItemRepository
-      .findByProductId(data.productId)
+      .findByProductId(data.userId, data.productId)
 
     if (productExists) {
       throw new NotAllowedError()

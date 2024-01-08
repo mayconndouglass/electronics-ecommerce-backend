@@ -3,9 +3,12 @@ import { CartItemRepository } from "./interfaces/cart-item-repository"
 import { prisma } from "@/lib/prisma"
 
 export class PrismaCartItemRepository implements CartItemRepository {
-  async findByProductId(productId: string) {
+  async findByProductId(userId: string, productId: string) {
     const cartItem = await prisma.cartItem.findFirst({
-      where: { product_id: productId }
+      where: {
+        user_id: userId,
+        product_id: productId
+      }
     })
 
     return cartItem

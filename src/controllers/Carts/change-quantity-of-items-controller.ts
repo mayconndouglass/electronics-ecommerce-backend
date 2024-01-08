@@ -29,7 +29,13 @@ export const ChangeQuantityOfItems = async (
       productRepository
     )
 
-    const { item } = await changeQuantityOfItems.execute(itemId, quantity)
+    const userId = request.user.sub
+
+    const { item } = await changeQuantityOfItems.execute(
+      userId,
+      itemId,
+      quantity
+    )
 
     return reply.status(200).send({ item })
   } catch (err) {

@@ -31,7 +31,7 @@ model Product {
   ProductColor ProductColor[]
   category_id  String
   ProductImage ProductImage[]
-  CartItem     CartItem[]
+  Item         CartItem[]
   FavoriteItem FavoriteItem[]
 
   @@map("products")
@@ -86,17 +86,49 @@ model Review {
 }
 
 model User {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String
-  email         String   @unique
+  email         String    @unique
   password_hash String
-  created_at    DateTime @default(now())
+  cpf           String?
+  birthdate     DateTime?
+  person_type   String?
+  created_at    DateTime  @default(now())
 
   Cart         Cart[]
-  CartItem     CartItem[]
+  Item         CartItem[]
   FavoriteItem FavoriteItem[]
+  Order        Order[]
+  Address      Address[]
 
   @@map("users")
+}
+
+model Address {
+  id           String @id @default(uuid())
+  zipCode      Int    @map("zip_code")
+  street       String
+  number       Int
+  state        String
+  city         String
+  neighborhood String
+  complement   String
+  userId       String @unique @map("user_id")
+
+  user  User    @relation(fields: [userId], references: [id])
+  Phone Phone[]
+
+  @@map("adress")
+}
+
+model Phone {
+  addressId   String
+  phoneNumber Int    @map("phone_number")
+
+  address Address @relation(fields: [addressId], references: [id])
+
+  @@id(name: "phone", [addressId, phoneNumber])
+  @@map("phones")
 }
 
 model Cart {
@@ -105,34 +137,54 @@ model Cart {
   user_id    String   @unique
   created_at DateTime @default(now())
 
-  CartItem CartItem[]
+  Item CartItem[]
 
   @@map("carts")
 }
 
 model CartItem {
   id      String  @id @default(uuid())
-  cart    Cart    @relation(fields: [cart_id], references: [id])
+  cart    Cart?   @relation(fields: [cart_id], references: [id])
   product Product @relation(fields: [product_id], references: [id])
   user    User    @relation(fields: [user_id], references: [id])
 
-  cart_id    String
+  cart_id    String?
   product_id String
   quantity   Int
   user_id    String
   price      String
+  Order      Order[]
 
-  @@map("cart_itens") //TODO: Aqui está escrito errado, não mudei assim qe vi p n perder dados
+  @@map("cart_items")
 }
 
 model FavoriteItem {
   user    User    @relation(fields: [user_id], references: [id])
   product Product @relation(fields: [product_id], references: [id])
 
-  user_id    String   @map("user_id")
-  product_id String   @map("product_id")
+  user_id    String
+  product_id String
   created_at DateTime @default(now())
 
   @@id(name: "favoriteItem", [user_id, product_id])
   @@map("favorite_items")
 }
+
+model Order {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  itemId         String   @map("item_id")
+  status         String
+  shippingMethod String   @map("shipping_method")
+  shippingFee    String   @map("shipping_fee")
+  paymentMethod  String   @map("payment_method")
+  totalPayable   String   @map("total_payable")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user User     @relation(fields: [userId], references: [id])
+  item CartItem @relation(fields: [itemId], references: [id])
+
+  @@map("orders")
+}
+
+//TODO: Pesqisar como fica um cartItem pode ter apenas uma ordem, mas uma ordem tem vários cartItem, aparentemente está errado aqui, pq em CartItem tem Orders[]

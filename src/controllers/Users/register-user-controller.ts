@@ -11,7 +11,7 @@ export const registerUser = async (
   const registerUserSchema = z.object({
     name: z.string(),
     email: z.string().email(),
-    password: z.string()
+    password: z.string().min(6)
   })
 
   const data = registerUserSchema.parse(request.body)

@@ -27,3 +27,25 @@ export const RegisterProductSchema = () => {
     return true
   })
 }
+
+export const RegisterProductJsonShema = () => {
+  return z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    created_at: z.string(),
+    price: z.string(),
+    promotional_price: z.string(),
+    discount: z.number(),
+    category_id: z.string(),
+    category_name: z.string(),
+    colors: z.array(z.object({
+      id: z.string(),
+      hexadecimal: z.string()
+    })).optional(),
+    images: z.array(z.object({
+      id: z.string(),
+      url: z.string()
+    }))
+  })
+}

@@ -15,4 +15,5 @@ export interface CartItemRepository {
     quantity: number,
     price: string
   ): Promise<CartItem>
+  removeCartId(itemId: string): Promise<void>
 }

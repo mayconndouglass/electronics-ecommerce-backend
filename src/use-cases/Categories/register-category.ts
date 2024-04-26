@@ -6,7 +6,8 @@ export class RegisterCategoryUseCase {
   constructor(private categoryRepository: CategoryRepository) { }
 
   async execute(data: RegisterCategoryDTO) {
-    const categoryWithSameName = await this.categoryRepository.findByName(data.name)
+    const categoryWithSameName = await this.categoryRepository
+      .findByName(data.name)
 
     if (categoryWithSameName) {
       throw new CategoryAlreadyExistsError()

@@ -3,6 +3,18 @@ import { CartItemRepository } from "./interfaces/cart-item-repository"
 import { prisma } from "@/lib/prisma"
 
 export class PrismaCartItemRepository implements CartItemRepository {
+  async removeCartId(itemId: string) {
+    const item = await prisma.cartItem.update({
+      where: {
+        id: itemId
+      }, data: {
+        cart_id: null
+      }
+    })
+
+    console.log("Item no PrismaCartItem", item)
+  }
+
   async findByProductId(userId: string, productId: string) {
     const cartItem = await prisma.cartItem.findFirst({
       where: {

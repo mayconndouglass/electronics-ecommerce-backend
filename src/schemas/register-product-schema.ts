@@ -36,7 +36,7 @@ export const RegisterProductJsonShema = () => {
     created_at: z.string(),
     price: z.string(),
     promotional_price: z.string().optional().nullable(),
-    discount: z.number().optional(),
+    discount: z.number().optional().nullable(),
     category_id: z.string(),
     category_name: z.string(),
     colors: z.array(z.object({

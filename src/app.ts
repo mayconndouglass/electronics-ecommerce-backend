@@ -22,7 +22,7 @@ app.register(favoriteRoutes)
 app.register(ordersRoutes)
 
 app.register(cors, {
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "https://electronics-ecommerce-frontend.vercel.app"],
   methods: ["GET", "POST", "PATCH", "DELETE"],
 })
 

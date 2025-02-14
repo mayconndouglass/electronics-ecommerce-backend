@@ -10,6 +10,7 @@ import { usersRoutes } from "./controllers/Users/routes"
 import { cartRoutes } from "./controllers/Carts/routes"
 import { favoriteRoutes } from "./controllers/Favorites/routes"
 import { ordersRoutes } from "./controllers/Orders/routes"
+import { colorsRoutes } from "./controllers/colors/routes"
 
 export const app = fastify()
 app.register(fastifyJwt, { secret: env.JWT_SECRET })
@@ -20,6 +21,7 @@ app.register(usersRoutes)
 app.register(cartRoutes)
 app.register(favoriteRoutes)
 app.register(ordersRoutes)
+app.register(colorsRoutes)
 
 app.register(cors, {
   origin: ["http://localhost:5173", "https://electronics-ecommerce-frontend.vercel.app"],

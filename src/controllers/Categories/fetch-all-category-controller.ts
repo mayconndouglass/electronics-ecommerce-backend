@@ -1,8 +1,8 @@
 import { PrismaCategoryRepository } from "@/repositories/prisma-category-repository"
 import { FetchAllCategories } from "@/use-cases/Categories/fetch-all-categories"
-import { FastifyReply } from "fastify"
+import { FastifyReply, FastifyRequest } from "fastify"
 
-export const fetchAllCategories = async (reply: FastifyReply) => {
+export const fetchAllCategories = async (request: FastifyRequest, reply: FastifyReply) => {
   const categoryRepository = new PrismaCategoryRepository()
   const fetchAllUseCase = new FetchAllCategories(categoryRepository)
 

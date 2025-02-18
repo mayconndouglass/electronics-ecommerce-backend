@@ -25,6 +25,7 @@ model Product {
   price             String
   promotional_price String?
   discount          Int?
+  price_num         Decimal  @default(0.0)
 
   category     Category       @relation(fields: [category_id], references: [id])
   Review       Review[]

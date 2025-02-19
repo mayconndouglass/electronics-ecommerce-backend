@@ -3,6 +3,7 @@ import { ProductRepository } from "./interfaces/product-repository"
 import { prisma } from "@/lib/prisma"
 import { ProductType } from "@/types/product"
 import { ProductTypeTwo } from "@/types/product-type-two"
+import { paginationProductType } from "@/types/pagination-product-type"
 
 export class PrismaProductRepository implements ProductRepository {
   async findProductById(id: string) {
@@ -97,5 +98,66 @@ export class PrismaProductRepository implements ProductRepository {
     const product = await prisma.product.create({ data })
 
     return product
+  }
+
+  async pagination(
+    page: number,
+    limit: number,
+    orderBy?: "older" | "newest" | "name" | "price",
+    categoryId?: string,
+    color?: string,
+    maxPrice?: number
+  ): Promise<paginationProductType> {
+    const sortByOptions = {
+      older: "created_at",
+      newest: "created_at",
+      name: "name",
+      price: "price_num",
+    }
+
+    const sortBy = orderBy ? sortByOptions[orderBy] : "name"
+    const sortOrder = orderBy === "newest" ? "desc" : "asc"
+    
+    const totalItems = await prisma.product.count({
+      where: {
+        category_id: categoryId || undefined,
+        ProductColor: color ? { some: { color_id: color } } : undefined,
+        price_num: maxPrice ? { lte: maxPrice } : undefined
+      }
+    })
+  
+    const products = await prisma.product.findMany({
+      where: {
+        category_id: categoryId || undefined,
+        ProductColor: color ? { some: { color_id: color } } : undefined,
+        price_num: maxPrice ? { lte: maxPrice } : undefined,
+      },
+      include: {
+        ProductImage: {
+          select: {
+            image: { select: { url: true } },
+          },
+          take: 1,
+        },
+      },
+      orderBy: {
+        [sortBy]: sortOrder
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+
+    const totalPages = Math.ceil(totalItems / limit)
+    const hasNextPage = page < totalPages
+    const hasPrevPage = page > 1
+  
+    return {
+      currentPage: page,
+      totalPages,
+      totalItems,
+      hasNextPage,
+      hasPrevPage,
+      products
+    }
   }
 }
